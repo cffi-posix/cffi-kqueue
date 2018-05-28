@@ -1,7 +1,7 @@
 ;;
-;;  cffi-epoll  -  Common Lisp wrapper for Linux epoll syscall
+;;  cffi-kqueue  -  Common Lisp wrapper for BSD kqueue syscall
 ;;
-;;  Copyright 2017 Thomas de Grivel <thoxdg@gmail.com>
+;;  Copyright 2017,2018 Thomas de Grivel <thoxdg@gmail.com>
 ;;
 ;;  Permission to use, copy, modify, and distribute this software for any
 ;;  purpose with or without fee is hereby granted, provided that the above
@@ -18,8 +18,8 @@
 
 (in-package :common-lisp)
 
-(defpackage :cffi-epoll
-  (:nicknames :epoll)
+(defpackage :cffi-kqueue
+  (:nicknames :kqueue)
   (:use
    :cffi
    :common-lisp
@@ -27,21 +27,38 @@
   (:shadow
    #:mod)
   (:export
-   #:create
-   #:with
-   #:ctl
-   #:add
-   #:mod
-   #:del
-   #:wait
-   #:+ctl-add+
-   #:+ctl-mod+
-   #:+ctl-del+
-   #:+in+
-   #:+out+
-   #:+rdhup+
-   #:+pri+
-   #:+err+
-   #:+hup+
-   #:+et+
-   #:+exclusive+))
+   #:+ev-add+
+   #:+ev-enable+
+   #:+ev-disable+
+   #:+ev-dispatch+
+   #:+ev-delete+
+   #:+ev-receipt+
+   #:+ev-oneshot+
+   #:+ev-clear+
+   #:+ev-eof+
+   #:+ev-error+
+   #:+evfilt-read+
+   #:+evfilt-write+
+   #:+evfilt-vnode+
+   #:+note-delete+
+   #:+note-write+
+   #:+note-extend+
+   #:+note-truncate+
+   #:+note-attrib+
+   #:+note-link+
+   #:+note-rename+
+   #:+note-revoke+
+   #:+evfilt-proc+
+   #:+note-exit+
+   #:+note-fork+
+   #:+note-exec+
+   #:+note-track+
+   #:+note-trackerr+
+   #:+evfilt-signal+
+   #:+evfilt-timer+
+   #:+evfilt-device+
+   #:c-kevent
+   #:c-kqueue
+   #:kevent
+   #:kqueue
+   #:ev-set))

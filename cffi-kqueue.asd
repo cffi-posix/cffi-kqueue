@@ -1,7 +1,7 @@
 ;;
-;;  cffi-epoll  -  Common Lisp wrapper for Linux epoll syscall
+;;  cffi-kqueue  -  Common Lisp wrapper for BSD kqueue syscall
 ;;
-;;  Copyright 2017 Thomas de Grivel <thoxdg@gmail.com>
+;;  Copyright 2017,2018 Thomas de Grivel <thoxdg@gmail.com>
 ;;
 ;;  Permission to use, copy, modify, and distribute this software for any
 ;;  purpose with or without fee is hereby granted, provided that the above
@@ -18,19 +18,19 @@
 
 (in-package :common-lisp-user)
 
-(defpackage :cffi-epoll.system
+(defpackage :cffi-kqueue.system
   (:use :common-lisp :asdf))
 
-(in-package :cffi-epoll.system)
+(in-package :cffi-kqueue.system)
 
-(defsystem :cffi-epoll
-  :name "cffi-epoll"
+(defsystem :cffi-kqueue
+  :name "cffi-kqueue"
   :author "Thomas de Grivel <thoxdg@gmail.com>"
   :version "0.1"
-  :description "Common Lisp wrapper for Linux epoll syscall"
+  :description "Common Lisp wrapper for BSD kqueue syscall"
   :defsystem-depends-on ("cffi-grovel")
   :depends-on ("cffi" "cffi-errno" "cffi-unistd")
   :components
   ((:file "package")
-   (:cffi-grovel-file "grovel-epoll" :depends-on ("package"))
-   (:file "cffi-epoll" :depends-on ("grovel-epoll"))))
+   (:cffi-grovel-file "grovel-kqueue" :depends-on ("package"))
+   (:file "cffi-kqueue" :depends-on ("grovel-kqueue"))))
