@@ -21,10 +21,37 @@
 (defcfun ("kqueue" c-kqueue) :int)
 
 (defun kqueue ()
-  (let ((fd (c-kqueue)))
+  (let ((fd (the (signed-byte 32) (c-kqueue))))
     (when (< fd 0)
       (error-errno "kqueue"))
     fd))
+
+(defmacro with-kqueue ((kq) &body body)
+  (let ((fd (gensym "FD-")))
+    `(let ((,fd (kqueue)))
+       (declare (type unistd:file-descriptor ,fd))
+       (unwind-protect (let ((,kq ,fd))
+                         (declare (type unistd:file-descriptor ,kq))
+                         ,@body)
+         (unistd:close ,fd)))))
+
+(defmacro kevent-ident (kev)
+  `(foreign-slot-value ,kev '(:struct kevent) 'ident))
+
+(defmacro kevent-filter (kev)
+  `(foreign-slot-value ,kev '(:struct kevent) 'filter))
+
+(defmacro kevent-flags (kev)
+  `(foreign-slot-value ,kev '(:struct kevent) 'flags))
+
+(defmacro kevent-fflags (kev)
+  `(foreign-slot-value ,kev '(:struct kevent) 'fflags))
+
+(defmacro kevent-data (kev)
+  `(foreign-slot-value ,kev '(:struct kevent) 'data))
+
+(defmacro kevent-udata (kev)
+  `(foreign-slot-value ,kev '(:struct kevent) 'udata))
 
 (defcfun ("kevent" c-kevent) :int
   (kq :int)
@@ -34,36 +61,16 @@
   (nevents :int)
   (timeout (:pointer (:struct timespec))))
 
-(defun kevent-ident (kev)
-  (foreign-slot-value kev '(:struct kevent) 'ident))
+(defun seconds-to-timespec (timespec seconds)
+  (let* ((sec (floor seconds))
+         (nanosec (floor (- seconds sec) 1/1000000000)))
+    (declare (type fixnum sec nanosec))
+      (with-foreign-slots ((tv-sec tv-nsec) timespec '(:struct timespec))
+        (setf tv-sec sec tv-nsec nanosec))))
 
-(defun kevent-filter (kev)
-  (foreign-slot-value kev '(:struct kevent) 'filter))
-
-(defun kevent-flags (kev)
-  (foreign-slot-value kev '(:struct kevent) 'flags))
-
-(defun kevent-fflags (kev)
-  (foreign-slot-value kev '(:struct kevent) 'fflags))
-
-(defun kevent-data (kev)
-  (foreign-slot-value kev '(:struct kevent) 'data))
-
-(defun kevent-udata (kev)
-  (foreign-slot-value kev '(:struct kevent) 'udata))
-
-(defun kevent (kq &key changes n-changes
-                    on-event (max-events 10)
-                    (timeout 0))
-  (with-foreign-objects ((timespec '(:struct timespec))
-                         (events '(:struct kevent) max-events))
-    (setf (foreign-slot-value timespec '(:struct timespec) 'tv-sec)
-          (floor timeout)
-          (foreign-slot-value timespec '(:struct timespec) 'tv-nsec)
-          (floor (- timeout (floor timeout)) 1/1000000000))
-    (let ((n (c-kevent kq changes n-changes events max-events timespec)))
-      (when (< n 0)
-        (error-errno "kevent"))
-      (when on-event
-        (dotimes (i n)
-          (funcall on-event (mem-aref events '(:struct kevent) i)))))))
+(defun kevent (kq &key changes n-changes events n-events timeout)
+  (let ((n (c-kevent kq changes n-changes events n-events timeout)))
+    (declare (type (signed-byte 32) n))
+    (when (< n 0)
+      (error-errno "kevent"))
+    n))
