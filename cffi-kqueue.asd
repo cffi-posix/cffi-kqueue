@@ -29,7 +29,9 @@
   :version "0.1"
   :description "Common Lisp wrapper for BSD kqueue syscall"
   :defsystem-depends-on ("cffi-grovel")
-  :depends-on ("cffi" "cffi-errno" "cffi-unistd")
+  :depends-on ("cffi"
+               "cffi-errno"
+               "cffi-unistd")
   :components
   ((:file "package")
    (:cffi-grovel-file "grovel-kqueue" :depends-on ("package"))
