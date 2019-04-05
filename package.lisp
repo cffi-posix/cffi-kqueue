@@ -60,5 +60,14 @@
    #:c-kevent
    #:c-kqueue
    #:kevent
+   #:kevent-ident
+   #:kevent-filter
+   #:kevent-flags
+   #:kevent-fflags
+   #:kevent-data
+   #:kevent-udata
    #:kqueue
-   #:ev-set))
+   #:ev-set
+   #:timespec
+   #:seconds-to-timespec
+   #:with-kqueue))
